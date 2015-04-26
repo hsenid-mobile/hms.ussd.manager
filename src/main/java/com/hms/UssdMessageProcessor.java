@@ -169,7 +169,7 @@ public class UssdMessageProcessor {
      * Every menu has to be register using this. Other wise there is no way to processor to get menus.
      * @param menu {@link com.hms.menu.Menu} implementation.
      */
-    public void registerMenus(Menu menu) {
+    public void registerMenu(Menu menu) {
         menus.add(menu);
     }
 
