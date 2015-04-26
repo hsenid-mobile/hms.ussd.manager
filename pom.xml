@@ -12,7 +12,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <ideamart.lib>${project.basedir}/lib</ideamart.lib>
+        <lib>${project.basedir}/lib</lib>
     </properties>
 
     <dependencies>
@@ -27,21 +27,21 @@
             <artifactId>gson</artifactId>
             <version>1.7.2</version>
             <scope>system</scope>
-            <systemPath>${ideamart.lib}/gson-1.7.2.jar</systemPath>
+            <systemPath>${lib}/gson-1.7.2.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>hms</groupId>
             <artifactId>tap-api</artifactId>
             <version>1.0.0</version>
             <scope>system</scope>
-            <systemPath>${ideamart.lib}/tap-api-1.0.0.jar</systemPath>
+            <systemPath>${lib}/tap-api-1.0.0.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <version>2.5</version>
             <scope>system</scope>
-            <systemPath>${ideamart.lib}/servlet-api-2.5.jar</systemPath>
+            <systemPath>${lib}/servlet-api-2.5.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
