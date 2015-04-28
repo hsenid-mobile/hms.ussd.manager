@@ -87,13 +87,17 @@ public class UssdMessageProcessor {
         //Get the message of new menu.
         String menuMessage = menu.getMessage(session, moUssdReq);
 
+        OperationType operationType = menu.getOperationType();
+        if(operationType == null)
+            operationType = OperationType.MT_FIN;
+
         //Generate back feature if session have more the 1 previous menus and if operation type not MT_FIN.
         if (session.getAccessedMenuNames().size() > 1
-                && !menu.getOperationType().getName().equalsIgnoreCase(OperationType.MT_FIN.getName())) {
+                && !operationType.getName().equalsIgnoreCase(OperationType.MT_FIN.getName())) {
             menuMessage = generateMessageWithBackFeature(menu.getMessage(session, moUssdReq));
         }
 
-        sendUssdResponse(moUssdReq.getSourceAddress(), menuMessage, menu.getOperationType(), moUssdReq.getSessionId());
+        sendUssdResponse(moUssdReq.getSourceAddress(), menuMessage, operationType, moUssdReq.getSessionId());
     }
 
     private Menu getPreviousMenu(Session session) {
@@ -102,7 +106,7 @@ public class UssdMessageProcessor {
         session.setCurrentMenuName(previousMenuName);
         sessionRepo.update(session);
 
-        return getMenubyName(previousMenuName);
+        return getMenuByName(previousMenuName);
     }
 
     private String generateMessageWithBackFeature(String message) {
@@ -127,20 +131,20 @@ public class UssdMessageProcessor {
         }
 
         //Get the accessed menu object by its name.
-        Menu currentMenu = getMenubyName(currentMenuName);
+        Menu currentMenu = getMenuByName(currentMenuName);
 
         // message cannot be null or empty, then send same menu.
         if (moUssdReq.getMessage() == null || moUssdReq.getMessage().isEmpty()) {
             return currentMenu;
         }
 
-        // Validate user input , if validation fail send the same menu.
+      /*  // Validate user input , if validation fail send the same menu.
         if (!currentMenu.validate(session, moUssdReq)) {
             return currentMenu;
-        }
+        }*/
 
         // If all success send the next menu. We can find the next menu name from the current menus, nextMenu Method.
-        Menu nextMenu = getMenubyName(currentMenu.getNextMenu());
+        Menu nextMenu = getMenuByName(currentMenu.getNextMenu(session, moUssdReq));
         if (nextMenu != null) {
             updateSessionDetail(session, currentMenuName, nextMenu);
             return nextMenu;
@@ -156,7 +160,12 @@ public class UssdMessageProcessor {
         sessionRepo.update(session);
     }
 
-    private Menu getMenubyName(String menuName) {
+    /**
+     * Get the menu by its name from the menu registry.
+     * @param menuName Menu name to get the Menu.
+     * @return the {@link com.hms.menu.Menu}
+     */
+    private Menu getMenuByName(String menuName) {
         for (Menu menu : menus) {
             if (menu.getMenuName().equalsIgnoreCase(menuName)) {
                 return menu;

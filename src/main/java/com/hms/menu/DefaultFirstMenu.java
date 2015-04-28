@@ -12,11 +12,6 @@ public class DefaultFirstMenu implements Menu {
     private static final String MENU_NAME=DefaultFirstMenu.class.getName();
 
     @Override
-    public boolean validate(Session session, MoUssdReq moUssdReq) {
-        return false;
-    }
-
-    @Override
     public String getMenuName() {
         return MENU_NAME;
     }
@@ -27,7 +22,7 @@ public class DefaultFirstMenu implements Menu {
     }
 
     @Override
-    public String getNextMenu() {
+    public String getNextMenu(Session session, MoUssdReq moUssdReq) {
         return null;
     }
 

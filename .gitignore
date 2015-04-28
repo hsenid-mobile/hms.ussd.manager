@@ -1,0 +1,25 @@
+# Idea Ignores
+*.iml
+*.ipr
+*.iws
+.idea/
+
+/.settings
+/.project
+/.classpath
+
+# Maven target folders
+/target
+*/target
+logs
+
+# Maven release plugin temp files
+*.releaseBackup
+*.versionsBackup
+
+# Compiled source
+*.class
+*.exe
+*.so
+*.logs
+.idea/workspace.xml
