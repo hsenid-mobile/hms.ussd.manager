@@ -3,8 +3,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.hms</groupId>
-    <artifactId>hms.ussd.manager</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>tap-ussd-manager</artifactId>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>hms.ussd.manager</name>
