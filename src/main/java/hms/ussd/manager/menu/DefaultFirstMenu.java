@@ -1,20 +1,18 @@
-package com.hms.menu;
+package hms.ussd.manager.menu;
 
-import com.hms.Session;
+import hms.ussd.manager.Session;
 import hms.tap.api.ussd.OperationType;
 import hms.tap.api.ussd.messages.MoUssdReq;
+import hms.ussd.manager.Session;
+import hms.ussd.manager.annotations.Index;
 
 /**
  * Created by rajive on 4/24/15.
  */
+@Index
 public class DefaultFirstMenu implements Menu {
 
     private static final String MENU_NAME=DefaultFirstMenu.class.getName();
-
-    @Override
-    public String getMenuName() {
-        return MENU_NAME;
-    }
 
     @Override
     public String getMessage(Session session, MoUssdReq moUssdReq) {
@@ -26,8 +24,4 @@ public class DefaultFirstMenu implements Menu {
         return null;
     }
 
-    @Override
-    public OperationType     getOperationType() {
-        return OperationType.MT_FIN;
-    }
 }

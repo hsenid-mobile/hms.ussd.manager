@@ -1,6 +1,7 @@
-package com.hms.repo;
+package hms.ussd.manager.repo;
 
-import com.hms.Session;
+import hms.ussd.manager.Session;
+import hms.ussd.manager.Session;
 
 public interface SessionRepo<E extends Session>  {
 

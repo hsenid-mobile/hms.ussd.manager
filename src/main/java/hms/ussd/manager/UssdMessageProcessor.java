@@ -1,10 +1,16 @@
-package com.hms;
+package hms.ussd.manager;
 
-import com.hms.conf.AppConfig;
-import com.hms.menu.DefaultFirstMenu;
-import com.hms.menu.Menu;
-import com.hms.repo.GuavaCacheSessionRepoImpl;
-import com.hms.repo.SessionRepo;
+import hms.ussd.manager.annotations.Config;
+import hms.ussd.manager.annotations.Index;
+import hms.ussd.manager.conf.AppConfig;
+import hms.ussd.manager.exceptions.DuplicateMenuIdException;
+import hms.ussd.manager.exceptions.IndexMenuNotDefinedException;
+import hms.ussd.manager.exceptions.MultipleIndexMenuException;
+import hms.ussd.manager.exceptions.UssdInitializationException;
+import hms.ussd.manager.menu.DefaultFirstMenu;
+import hms.ussd.manager.menu.Menu;
+import hms.ussd.manager.repo.GuavaCacheSessionRepoImpl;
+import hms.ussd.manager.repo.SessionRepo;
 import hms.tap.api.TapException;
 import hms.tap.api.ussd.OperationType;
 import hms.tap.api.ussd.UssdRequestSender;
@@ -14,8 +20,9 @@ import hms.tap.api.ussd.messages.MtUssdResp;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,37 +34,80 @@ public class UssdMessageProcessor {
     private SessionRepo sessionRepo;
     private AppConfig appConfig;
 
-    List<Menu> menus = new ArrayList<Menu>();
+    List<Menu> menus;
 
     /**
      * This Object needs to be initialise with following mandatory parameters.
      * If those parameters are not initialize default values will be assign.
-     * In memory database {@link com.hms.repo.GuavaSessionRepo}. Default {@link com.hms.menu.DefaultFirstMenu} and
-     * default {@link com.hms.conf.AppConfig}
-     * @param initialMenu
-     * @param sessionRepo
-     * @param appConfig
+     * In memory database {@link hms.ussd.manager.repo.GuavaSessionRepo}. Default {@link DefaultFirstMenu} and
+     * default {@link hms.ussd.manager.conf.AppConfig}
+     * @param builder
      */
-    public UssdMessageProcessor(Menu initialMenu, SessionRepo sessionRepo, AppConfig appConfig) {
-        buildUssdConfiguration(initialMenu, sessionRepo, appConfig);
-    }
+    private UssdMessageProcessor(Builder builder) throws UssdInitializationException, MultipleIndexMenuException, DuplicateMenuIdException, IndexMenuNotDefinedException {
 
-    private void buildUssdConfiguration(Menu initialMenu, SessionRepo sessionRepo, AppConfig appConfig) {
-
-        firstMenu = initialMenu;
-        this.sessionRepo = sessionRepo;
-        this.appConfig = appConfig;
-
-        if (firstMenu == null) {
-            firstMenu = new DefaultFirstMenu();
-            menus.add(firstMenu);
+        if (builder.menus == null) {
+            throw new UssdInitializationException("No ussd menus defined.");
+        }
+        else {
+            validateMenus(builder.menus);
+            this.menus = builder.menus;
         }
 
-        if (sessionRepo == null)
-            this.sessionRepo = new GuavaCacheSessionRepoImpl();
 
-        if (appConfig == null)
-            this.appConfig = new AppConfig();
+        if (builder.sessionRepo == null)
+            this.sessionRepo = new GuavaCacheSessionRepoImpl();
+        else
+            this.sessionRepo = builder.sessionRepo;
+
+        if (builder.appConfig == null)
+            this.appConfig = new AppConfig.Builder().build();
+        else
+            this.appConfig = builder.appConfig;
+    }
+
+    private void validateMenus(List<Menu> menus) throws DuplicateMenuIdException, MultipleIndexMenuException, IndexMenuNotDefinedException {
+        Map<String, Class<? extends Menu>> menuNames = new HashMap<String, Class<? extends Menu>>();
+        for (Menu menu : menus) {
+            String menuId = getMenuId(menu);
+            Class<? extends Menu> aClass = menuNames.get(menuId);
+            if(aClass != null) {
+                throw new DuplicateMenuIdException(menuId, aClass, menu.getClass());
+            }
+            if(isIndexMenu(menu)) {
+                if(firstMenu == null) {
+                    firstMenu = menu;
+                }
+                else {
+                    throw new MultipleIndexMenuException();
+                }
+            }
+        }
+        if(firstMenu == null) {
+            throw new IndexMenuNotDefinedException();
+        }
+    }
+
+    public boolean isIndexMenu(Menu menu) {
+        if(menu.getClass().isAnnotationPresent(Index.class)) {
+            return true;
+        }
+        return false;
+    }
+
+    public String getMenuId(Menu menu) {
+        if(menu.getClass().isAnnotationPresent(Config.class)) {
+            if(menu.getClass().getAnnotation(Config.class).id() != null) {
+                return menu.getClass().getAnnotation(Config.class).id();
+            }
+        }
+        return menu.getClass().getName();
+    }
+
+    public OperationType getOperationType(Menu menu) {
+        if(menu.getClass().isAnnotationPresent(Config.class)) {
+                return menu.getClass().getAnnotation(Config.class).end() ? OperationType.MT_FIN : OperationType.MT_CONT;
+        }
+        return OperationType.MT_CONT;
     }
 
     /**
@@ -87,9 +137,7 @@ public class UssdMessageProcessor {
         //Get the message of new menu.
         String menuMessage = menu.getMessage(session, moUssdReq);
 
-        OperationType operationType = menu.getOperationType();
-        if(operationType == null)
-            operationType = OperationType.MT_FIN;
+        OperationType operationType = getOperationType(menu);
 
         //Generate back feature if session have more the 1 previous menus and if operation type not MT_FIN.
         if (session.getAccessedMenuNames().size() > 1
@@ -126,7 +174,7 @@ public class UssdMessageProcessor {
 
         //if user doesn't have a current menu send first menu.
         if (currentMenuName == null) {
-            updateSessionDetail(session, firstMenu.getMenuName(), firstMenu);
+            updateSessionDetail(session, getMenuId(firstMenu), firstMenu);
             return firstMenu;
         }
 
@@ -155,7 +203,7 @@ public class UssdMessageProcessor {
     }
 
     private void updateSessionDetail(Session session, String currentMenuName, Menu nextMenu) {
-        session.setCurrentMenuName(nextMenu.getMenuName());
+        session.setCurrentMenuName(getMenuId(nextMenu));
         session.getAccessedMenuNames().add(currentMenuName);
         sessionRepo.update(session);
     }
@@ -163,23 +211,15 @@ public class UssdMessageProcessor {
     /**
      * Get the menu by its name from the menu registry.
      * @param menuName Menu name to get the Menu.
-     * @return the {@link com.hms.menu.Menu}
+     * @return the {@link Menu}
      */
     private Menu getMenuByName(String menuName) {
         for (Menu menu : menus) {
-            if (menu.getMenuName().equalsIgnoreCase(menuName)) {
+            if (getMenuId(menu).equalsIgnoreCase(menuName)) {
                 return menu;
             }
         }
         return firstMenu;
-    }
-
-    /**
-     * Every menu has to be register using this. Other wise there is no way to processor to get menus.
-     * @param menu {@link com.hms.menu.Menu} implementation.
-     */
-    public void registerMenu(Menu menu) {
-        menus.add(menu);
     }
 
     /**
@@ -213,4 +253,29 @@ public class UssdMessageProcessor {
         }
     }
 
+    public static final class Builder {
+
+        private SessionRepo sessionRepo;
+        private AppConfig appConfig;
+        private List<Menu> menus;
+
+        public Builder sessionRepo(SessionRepo sessionRepo) {
+            this.sessionRepo = sessionRepo;
+            return this;
+        }
+
+        public Builder appConfig(AppConfig appConfig) {
+            this.appConfig = appConfig;
+            return this;
+        }
+
+        public Builder menus(List<Menu> menus) {
+            this.menus = menus;
+            return this;
+        }
+
+        public UssdMessageProcessor build() throws UssdInitializationException, MultipleIndexMenuException, DuplicateMenuIdException, IndexMenuNotDefinedException {
+            return new UssdMessageProcessor(this);
+        }
     }
+}

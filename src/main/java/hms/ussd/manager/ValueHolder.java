@@ -1,4 +1,4 @@
-package com.hms;
+package hms.ussd.manager;
 
 /**
  * Created by rajive on 4/24/15.

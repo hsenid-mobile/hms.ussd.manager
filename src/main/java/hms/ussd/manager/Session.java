@@ -1,6 +1,5 @@
-package com.hms;
+package hms.ussd.manager;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

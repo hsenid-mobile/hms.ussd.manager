@@ -1,9 +1,10 @@
-package com.hms.repo;
+package hms.ussd.manager.repo;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.hms.Session;
+import hms.ussd.manager.Session;
+import hms.ussd.manager.Session;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;

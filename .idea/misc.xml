@@ -3,7 +3,7 @@
   <component name="EntryPointsManager">
     <entry_points version="2.0" />
   </component>
-  <component name="IdProvider" IDEtalkID="E74134F046C6A5798CD0D3D5F36199A8" />
+  <component name="IdProvider" IDEtalkID="5AB025EB7760B8E21EDBE9F7C1AB8AAC" />
   <component name="MavenProjectsManager">
     <option name="originalFiles">
       <list>
@@ -12,6 +12,6 @@
     </option>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" assert-keyword="true" jdk-15="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
-    <output url="file://$PROJECT_DIR$/out" />
+    <output url="file://$PROJECT_DIR$/classes" />
   </component>
 </project>

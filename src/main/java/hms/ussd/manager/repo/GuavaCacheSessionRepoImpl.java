@@ -1,8 +1,9 @@
-package com.hms.repo;
+package hms.ussd.manager.repo;
 
-import com.hms.Session;
-import com.hms.repo.GuavaSessionRepo;
-import com.hms.repo.SessionRepo;
+import hms.ussd.manager.Session;
+import hms.ussd.manager.repo.GuavaSessionRepo;
+import hms.ussd.manager.repo.SessionRepo;
+import hms.ussd.manager.Session;
 
 /**
  * Created by rajive on 4/21/15.
