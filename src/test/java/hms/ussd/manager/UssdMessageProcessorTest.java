@@ -7,7 +7,6 @@ import hms.ussd.manager.exceptions.MultipleIndexMenuException;
 import hms.ussd.manager.exceptions.UssdInitializationException;
 import hms.ussd.manager.menu.*;
 import hms.ussd.manager.repo.GuavaCacheSessionRepoImpl;
-import junit.framework.TestCase;
 
 import java.util.Arrays;
 

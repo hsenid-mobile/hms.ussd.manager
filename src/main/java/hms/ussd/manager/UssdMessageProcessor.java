@@ -125,7 +125,7 @@ public class UssdMessageProcessor {
 
         //Generate back feature if session have more the 1 previous menus and if operation type not MT_FIN.
         if (session.getAccessedMenuNames().size() > 1
-                && !operationType.getName().equalsIgnoreCase(OperationType.MT_FIN.getName())) {
+                && operationType != OperationType.MT_FIN) {
             menuMessage = generateMessageWithBackFeature(menu.getMessage(session, moUssdReq));
         }
 
