@@ -50,7 +50,7 @@ public class UssdMessageProcessor {
      */
     private UssdMessageProcessor(Builder builder) throws UssdInitializationException, MultipleIndexMenuException, DuplicateMenuIdException, IndexMenuNotDefinedException {
 
-        if (builder.menus == null) {
+        if (builder.menus == null || builder.menus.isEmpty()) {
             throw new UssdInitializationException("No ussd menus defined.");
         }
         else {
@@ -77,6 +77,8 @@ public class UssdMessageProcessor {
             Class<? extends Menu> aClass = menuNames.get(menuId);
             if(aClass != null) {
                 throw new DuplicateMenuIdException(menuId, aClass, menu.getClass());
+            } else {
+                menuNames.put(menuId, menu.getClass());
             }
             if(isIndexMenu(menu)) {
                 if(firstMenu == null) {

@@ -13,7 +13,7 @@ public class DuplicateMenuIdException extends Exception {
         StringBuffer stringBuffer = new StringBuffer("Duplicate menu id " + menuId + "\n");
         if(classes != null) {
             for (Class<? extends Menu> aClass : classes) {
-
+                stringBuffer.append(aClass).append("\n");
             }
         };
         message = stringBuffer.toString();
