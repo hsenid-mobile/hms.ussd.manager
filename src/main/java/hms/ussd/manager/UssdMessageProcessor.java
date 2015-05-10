@@ -9,6 +9,7 @@ import hms.ussd.manager.exceptions.MultipleIndexMenuException;
 import hms.ussd.manager.exceptions.UssdInitializationException;
 import hms.ussd.manager.menu.DefaultFirstMenu;
 import hms.ussd.manager.menu.Menu;
+import hms.ussd.manager.menu.MenuUtil;
 import hms.ussd.manager.repo.GuavaCacheSessionRepoImpl;
 import hms.ussd.manager.repo.SessionRepo;
 import hms.tap.api.TapException;
@@ -25,6 +26,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static hms.ussd.manager.menu.MenuUtil.getMenuId;
+import static hms.ussd.manager.menu.MenuUtil.getOperationType;
+import static hms.ussd.manager.menu.MenuUtil.isIndexMenu;
 
 public class UssdMessageProcessor {
 
@@ -85,29 +90,6 @@ public class UssdMessageProcessor {
         if(firstMenu == null) {
             throw new IndexMenuNotDefinedException();
         }
-    }
-
-    public boolean isIndexMenu(Menu menu) {
-        if(menu.getClass().isAnnotationPresent(Index.class)) {
-            return true;
-        }
-        return false;
-    }
-
-    public String getMenuId(Menu menu) {
-        if(menu.getClass().isAnnotationPresent(Config.class)) {
-            if(menu.getClass().getAnnotation(Config.class).id() != null) {
-                return menu.getClass().getAnnotation(Config.class).id();
-            }
-        }
-        return menu.getClass().getName();
-    }
-
-    public OperationType getOperationType(Menu menu) {
-        if(menu.getClass().isAnnotationPresent(Config.class)) {
-                return menu.getClass().getAnnotation(Config.class).end() ? OperationType.MT_FIN : OperationType.MT_CONT;
-        }
-        return OperationType.MT_CONT;
     }
 
     /**

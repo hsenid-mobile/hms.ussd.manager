@@ -4,6 +4,7 @@ import hms.ussd.manager.Session;
 import hms.tap.api.ussd.OperationType;
 import hms.tap.api.ussd.messages.MoUssdReq;
 import hms.ussd.manager.Session;
+import hms.ussd.manager.annotations.Config;
 import hms.ussd.manager.annotations.Index;
 
 /**
