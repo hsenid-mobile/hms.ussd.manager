@@ -120,8 +120,8 @@ public class Session {
     public String getValueByKey(String key) {
 
         for (ValueHolder valueHolder : valueHolders) {
-            if (valueHolder.equals(key))
-                return value;
+            if (valueHolder.getKey() != null && valueHolder.getKey().equals(key))
+                return valueHolder.getValue();
         }
         return null;
     }
