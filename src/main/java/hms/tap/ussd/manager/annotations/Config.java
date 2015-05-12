@@ -1,7 +1,5 @@
 package hms.tap.ussd.manager.annotations;
 
-import hms.tap.api.ussd.OperationType;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -11,5 +9,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface Config {
     String id();
-    boolean end();
+    boolean end() default true;
 }
