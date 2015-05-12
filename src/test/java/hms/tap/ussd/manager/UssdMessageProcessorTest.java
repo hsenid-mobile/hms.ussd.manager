@@ -13,7 +13,7 @@ import java.util.Arrays;
 public class UssdMessageProcessorTest {
     public static void main(String[] args) {
         try {
-            System.out.println(MenuUtil.getOperationType(Menu2.class.newInstance()));;
+            System.out.println(MenuUtil.getOperationType(Menu2.class.newInstance()));
 
             UssdMessageProcessor ussdMessageProcessor = new UssdMessageProcessor.Builder().
                     appConfig(new AppConfig.Builder().build()).

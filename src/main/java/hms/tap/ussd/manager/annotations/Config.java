@@ -9,5 +9,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface Config {
     String id();
-    boolean end() default true;
+    boolean end() default false;
 }
